@@ -100,3 +100,17 @@ section h2 {
     width: 90%;
   }
 }
+.buy-btn {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: black;
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.buy-btn:hover {
+  background: #333;
+}
