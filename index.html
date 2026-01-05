@@ -57,39 +57,51 @@
   <h2>문의</h2>
   <p>이메일: eunhugim600@gmail.com</p>
 </section>
+
 <script>
-  let cart = [];
-  const cartCount = document.getElementById('cart-count');
-  const cartBtn = document.getElementById('cart-btn');
-  const addButtons = document.querySelectorAll('.add-cart-btn');
+let cart = []; // 장바구니 배열
+const cartCount = document.getElementById('cart-count');
+const cartBtn = document.getElementById('cart-btn');
+const addButtons = document.querySelectorAll('.add-cart-btn');
 
-  addButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const name = button.dataset.name;
-      const price = button.dataset.price;
+// 장바구니 담기 버튼 클릭
+addButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const name = button.dataset.name;
+    const price = Number(button.dataset.price);
 
-      cart.push({ name, price });
-      cartCount.textContent = cart.length;
-
-      alert(name + ' 이(가) 장바구니에 담겼습니다!');
-    });
-  });
-
-  cartBtn.addEventListener('click', () => {
-    if (cart.length === 0) {
-      alert('장바구니가 비어있습니다.');
-      return;
+    // 이미 담긴 상품이면 수량 증가
+    const existing = cart.find(item => item.name === name);
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      cart.push({ name, price, quantity: 1 });
     }
 
-    let message = '🛒 장바구니 목록\n\n';
-    cart.forEach((item, index) => {
-      message += `${index + 1}. ${item.name} - ₩${item.price}\n`;
-    });
-
-    alert(message);
+    updateCartCount();
   });
-</script>
+});
 
+// 상단 장바구니 버튼 클릭 → 장바구니 확인
+cartBtn.addEventListener('click', () => {
+  if (cart.length === 0) {
+    alert('장바구니가 비어있습니다.');
+    return;
+  }
+
+  let message = '🛒 장바구니 목록\n\n';
+  cart.forEach((item, index) => {
+    message += `${index + 1}. ${item.name} - ₩${item.price} x ${item.quantity} = ₩${item.price * item.quantity}\n`;
+  });
+  alert(message);
+});
+
+// 장바구니 숫자 업데이트
+function updateCartCount() {
+  const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+  cartCount.textContent = total;
+}
+</script>
 </body>
 </html>
 <div class="product">
