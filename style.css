@@ -1,3 +1,6 @@
+/* =====================
+   기본 설정
+===================== */
 * {
   margin: 0;
   padding: 0;
@@ -5,6 +8,13 @@
   font-family: Arial, sans-serif;
 }
 
+body {
+  margin: 0;
+}
+
+/* =====================
+   헤더
+===================== */
 header {
   background: black;
   color: white;
@@ -24,6 +34,10 @@ nav a {
 nav a:hover {
   text-decoration: underline;
 }
+
+/* =====================
+   섹션 공통
+===================== */
 section {
   padding: 80px 20px;
   text-align: center;
@@ -33,38 +47,24 @@ section h2 {
   font-size: 28px;
   margin-bottom: 20px;
 }
-.product-list {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  margin-top: 40px;
-}
 
-.product {
-  width: 150px;
-}
-section {
-  padding: 80px 20px;
-  text-align: center;
-}
-
-#intro h2 {
-  font-size: 28px;
-  margin-bottom: 20px;
-}
-
+/* =====================
+   소개 섹션
+===================== */
 #intro p {
   font-size: 15px;
   color: #555;
 }
-#products h2 {
-  margin-bottom: 40px;
-}
 
-.product-list {
+/* =====================
+   상품 섹션
+===================== */
+.products {
   display: flex;
   justify-content: center;
   gap: 40px;
+  flex-wrap: wrap; /* ⭐ 반응형 핵심 */
+  margin-top: 40px;
 }
 
 .product {
@@ -74,9 +74,29 @@ section {
 
 .product img {
   width: 100%;
+  height: auto;
 }
 
 .price {
   margin-top: 10px;
   font-weight: bold;
+}
+
+/* =====================
+   모바일 반응형
+===================== */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .products {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .product {
+    width: 90%;
+  }
 }
