@@ -16,6 +16,8 @@
     <a href="#products">제품</a>
     <a href="#contact">문의</a>
   </nav>
+  <button id="cart-btn">🛒 장바구니 (<span id="cart-count">0</span>)</button>
+
 </header>
 
 <section id="intro">
@@ -31,10 +33,22 @@
       <img src="images/minimal-tee.jpg.png" alt="Minimal Tee">
       <h3>사랑해티셔츠</h3>
       <p class="price">₩39,000</p>
+
+       <button class="add-cart-btn" data-name="사랑해티셔츠" data-price="39000">
+    장바구니 담기
+  </button>
     </div>
 
+ <div class="products"></div>
     <div class="product">
-      <p>Typo Tee</p>
+          <img src="images/suki-T-shirt.jpg.png" alt="Minimal Tee">
+      <h3>좋아해티셔츠</h3>
+      <p class="price">₩39,000</p>
+
+      <button class="add-cart-btn" data-name="좋아해 티셔츠" data-price="39000">
+  장바구니 담기
+</button>
+
     </div>
   </div>
 </section>
@@ -43,6 +57,38 @@
   <h2>문의</h2>
   <p>이메일: eunhugim600@gmail.com</p>
 </section>
+<script>
+  let cart = [];
+  const cartCount = document.getElementById('cart-count');
+  const cartBtn = document.getElementById('cart-btn');
+  const addButtons = document.querySelectorAll('.add-cart-btn');
+
+  addButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const name = button.dataset.name;
+      const price = button.dataset.price;
+
+      cart.push({ name, price });
+      cartCount.textContent = cart.length;
+
+      alert(name + ' 이(가) 장바구니에 담겼습니다!');
+    });
+  });
+
+  cartBtn.addEventListener('click', () => {
+    if (cart.length === 0) {
+      alert('장바구니가 비어있습니다.');
+      return;
+    }
+
+    let message = '🛒 장바구니 목록\n\n';
+    cart.forEach((item, index) => {
+      message += `${index + 1}. ${item.name} - ₩${item.price}\n`;
+    });
+
+    alert(message);
+  });
+</script>
 
 </body>
 </html>
@@ -56,8 +102,29 @@
     구매하기
   </a>
 </div>
-<a href="#contact" class="buy-btn">구매하기</a>
-<button class="buy-btn" onclick="alert('구매 준비 중입니다 😊')">
-  구매하기
 </button>
+<div class="products">
 
+  <!-- 상품 1 -->
+  <div class="product">
+    <img src="images/minimal-tee.jpg.png" alt="Minimal Tee">
+    <h3>Minimal Tee</h3>
+    <p class="price">₩39,000</p>
+
+    <a href="https://open.kakao.com/o/guXCw49h" class="buy-btn" target="_blank">
+      구매하기
+    </a>
+  </div>
+
+  <!-- 상품 2 -->
+  <div class="product">
+    <img src="images/suki-T-shirt.jpg.png" alt="Typo Tee">
+    <h3>좋아해 티셔츠</h3>
+    <p class="price">₩39,000</p>
+
+    <a href="https://open.kakao.com/o/guXCw49h" class="buy-btn" target="_blank">
+      구매하기
+    </a>
+  </div>
+
+</div>
