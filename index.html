@@ -34,6 +34,13 @@
 
 <section id="products">
   <h2>제품</h2>
+  <div class="category-buttons">
+  <button data-category="all" class="active">전체</button>
+  <button data-category="반팔">반팔</button>
+  <button data-category="맨투맨">맨투맨</button>
+  <button data-category="후드티">후드티</button>
+</div>
+
   <div class="products">
     <!-- JS에서 상품 생성 -->
   </div>
@@ -55,162 +62,166 @@
 </div>
 
 <script>
-let cart = [];
+// ============================
+// 1. 장바구니 (localStorage)
+// ============================
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-// 로컬스토리지에서 장바구니 불러오기
-if(localStorage.getItem('cart')) {
-  cart = JSON.parse(localStorage.getItem('cart'));
+function saveCart() {
+  localStorage.setItem('cart', JSON.stringify(cart));
 }
 
-const productsContainer = document.querySelector('.products');
-
-// 상품 데이터 배열 (여기에 새 상품 추가 가능)
+// ============================
+// 2. 상품 데이터 (여기만 수정)
+// ============================
 const productsData = [
-  { name: "사랑해티셔츠", price: 39000, img: "images/사랑해-T-shirt.jpg" },
-  { name: "좋아해티셔츠", price: 39000, img: "images/suki-T-shirt.jpg.png" },
-  { name: "집중하다 티셔츠", price: 39000, img: "images/집중하다-T-Shirt.jpg" },
-  { name: "괜찮아 티셔츠", price: 39000, img: "images/괜찮아-T-shirt.jpg" },
-  // 여기 아래에 새 상품 추가 가능
-  { name: "말 보단 행동으로 증명함", price: 39000, img: "images/증명-T-shirt.jpg" }
+  { name: "사랑해티셔츠", price: 39000, img: "images/사랑해-T-shirt.jpg", category: "반팔" },
+  { name: "좋아해티셔츠", price: 39000, img: "images/suki-T-shirt.jpg.png", category: "반팔" },
+  { name: "집중하다 티셔츠", price: 39000, img: "images/집중하다-T-Shirt.jpg", category: "반팔" },
+  { name: "괜찮아 티셔츠", price: 39000, img: "images/괜찮아-T-shirt.jpg", category: "반팔" },
+  { name: "말 보단 행동으로 증명함 티셔츠", price: 39000, img: "images/증명-T-shirt.jpg", category: "반팔" },
+  { name: "새로운 후드티", price: 39000, img: "images/logo.jpg", category: "후드티"}
 ];
 
-// 상품 추가 함수
-function addProductToPage(product){
+// ============================
+// 3. 상품 렌더링
+// ============================
+const productsContainer = document.querySelector('.products');
+
+function addProductToPage(product) {
   const div = document.createElement('div');
   div.className = 'product';
   div.innerHTML = `
     <img src="${product.img}" alt="${product.name}">
     <h3>${product.name}</h3>
     <p class="price">₩${product.price.toLocaleString()}</p>
-    <button class="add-cart-btn" data-name="${product.name}" data-price="${product.price}">장바구니 담기</button>
+    <button class="add-cart-btn">장바구니 담기</button>
   `;
-  productsContainer.appendChild(div);
 
   div.querySelector('.add-cart-btn').addEventListener('click', () => {
     const existing = cart.find(i => i.name === product.name);
-    if(existing) existing.quantity +=1;
-    else cart.push({name: product.name, price: product.price, quantity:1});
+    if (existing) existing.quantity++;
+    else cart.push({ name: product.name, price: product.price, quantity: 1 });
+
     updateCartCount();
-    saveCart(); // localStorage 저장
+    saveCart();
   });
+
+  productsContainer.appendChild(div);
 }
 
-// 페이지에 모든 상품 추가
-productsData.forEach(addProductToPage);
+function renderProducts(category = "all") {
+  productsContainer.innerHTML = '';
+  const list = category === "all"
+    ? productsData
+    : productsData.filter(p => p.category === category);
 
-// 장바구니 모달 관련
-const cartCount = document.getElementById('cart-count');
+  list.forEach(addProductToPage);
+}
+
+// 최초 로드
+renderProducts();
+
+// ============================
+// 4. 카테고리 버튼
+// ============================
+document.querySelectorAll('.category-buttons button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.category-buttons button')
+      .forEach(b => b.classList.remove('active'));
+
+    btn.classList.add('active');
+    renderProducts(btn.dataset.category);
+  });
+});
+
+// ============================
+// 5. 장바구니 UI
+// ============================
 const cartBtn = document.getElementById('cart-btn');
 const cartModal = document.getElementById('cart-modal');
 const cartItems = document.getElementById('cart-items');
 const cartClose = document.getElementById('cart-close');
 const cartTotal = document.getElementById('cart-total');
+const cartCount = document.getElementById('cart-count');
 
-// 장바구니 카운트 업데이트
-function updateCartCount(){
-  const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-  cartCount.textContent = total;
+function updateCartCount() {
+  cartCount.textContent = cart.reduce((s, i) => s + i.quantity, 0);
 }
 
-// localStorage 저장
-function saveCart(){
-  localStorage.setItem('cart', JSON.stringify(cart));
-}
-
-// 장바구니 렌더링
-function renderCart(){
+function renderCart() {
   cartItems.innerHTML = '';
-  if(cart.length === 0){
+  let total = 0;
+
+  if (cart.length === 0) {
     cartItems.innerHTML = '<li>장바구니가 비어있습니다.</li>';
-    cartTotal.textContent = "총합: ₩0";
+    cartTotal.textContent = '총합: ₩0';
     return;
   }
 
-  let totalSum = 0;
-  cart.forEach((item, idx) => {
-    totalSum += item.price * item.quantity;
+  cart.forEach((item, i) => {
+    total += item.price * item.quantity;
     const li = document.createElement('li');
     li.innerHTML = `
-      ${idx+1}. ${item.name} - ₩${item.price.toLocaleString()} x ${item.quantity} = ₩${(item.price*item.quantity).toLocaleString()}
-      <span class="cart-item-controls">
-        <button class="minus">-</button>
-        <button class="plus">+</button>
-        <button class="remove">삭제</button>
-      </span>
+      ${i+1}. ${item.name} - ₩${item.price.toLocaleString()} x ${item.quantity}
+      <button class="minus">-</button>
+      <button class="plus">+</button>
+      <button class="remove">삭제</button>
     `;
-    cartItems.appendChild(li);
 
-    li.querySelector('.minus').addEventListener('click', () => {
-      if(item.quantity > 1) item.quantity--;
-      else cart = cart.filter(i => i !== item);
-      updateCartCount();
-      saveCart();
-      renderCart();
-    });
-    li.querySelector('.plus').addEventListener('click', () => {
-      item.quantity++;
-      updateCartCount();
-      saveCart();
-      renderCart();
-    });
-    li.querySelector('.remove').addEventListener('click', () => {
-      cart = cart.filter(i => i !== item);
-      updateCartCount();
-      saveCart();
-      renderCart();
-    });
+    li.querySelector('.minus').onclick = () => {
+      item.quantity > 1 ? item.quantity-- : cart.splice(i,1);
+      saveCart(); updateCartCount(); renderCart();
+    };
+    li.querySelector('.plus').onclick = () => {
+      item.quantity++; saveCart(); updateCartCount(); renderCart();
+    };
+    li.querySelector('.remove').onclick = () => {
+      cart.splice(i,1); saveCart(); updateCartCount(); renderCart();
+    };
+
+    cartItems.appendChild(li);
   });
 
-  cartTotal.textContent = `총합: ₩${totalSum.toLocaleString()}`;
+  cartTotal.textContent = `총합: ₩${total.toLocaleString()}`;
 }
 
-// 장바구니 열기
-cartBtn.addEventListener('click', () => {
+cartBtn.onclick = () => {
   renderCart();
   cartModal.style.display = 'flex';
-});
+};
 
-// 모달 닫기
-cartClose.addEventListener('click', () => cartModal.style.display='none');
-cartModal.addEventListener('click', e => { if(e.target === cartModal) cartModal.style.display='none'; });
+cartClose.onclick = () => cartModal.style.display = 'none';
+cartModal.onclick = e => {
+  if (e.target === cartModal) cartModal.style.display = 'none';
+};
 
-// ---------------------------
-// 결제하기 버튼 (오픈카톡 이동)
-// ---------------------------
+// ============================
+// 6. 결제하기 (카카오 이동)
+// ============================
 const checkoutBtn = document.createElement('button');
 checkoutBtn.textContent = '결제하기';
 checkoutBtn.style.marginTop = '15px';
-checkoutBtn.style.padding = '8px 12px';
-checkoutBtn.style.cursor = 'pointer';
-checkoutBtn.style.background = '#ff5722';
+checkoutBtn.style.padding = '10px';
+checkoutBtn.style.background = 'black';
 checkoutBtn.style.color = 'white';
 checkoutBtn.style.border = 'none';
-checkoutBtn.style.fontWeight = 'bold';
-checkoutBtn.style.borderRadius = '4px';
-checkoutBtn.addEventListener('mouseover', ()=>checkoutBtn.style.background='#e64a19');
-checkoutBtn.addEventListener('mouseout', ()=>checkoutBtn.style.background='#ff5722');
+checkoutBtn.style.cursor = 'pointer';
 
-// 모달 안에 버튼 추가
-cartModal.querySelector('.cart-content').appendChild(checkoutBtn);
-
-// 클릭하면 오픈카톡 링크로 이동
-checkoutBtn.addEventListener('click', () => {
-  if(cart.length === 0){
+checkoutBtn.onclick = () => {
+  if (cart.length === 0) {
     alert('장바구니가 비어있습니다.');
     return;
   }
+  window.open('https://open.kakao.com/o/s3PbL79h', '_blank');
+};
 
-  // 카톡 링크 (자신의 오픈채팅 링크로 변경)
-  const kakaoLink = 'https://open.kakao.com/o/s3PbL79h';
+cartModal.querySelector('.cart-content').appendChild(checkoutBtn);
 
-  // 링크 열기
-  window.open(kakaoLink, '_blank');
-});
-  
-// 초기 페이지 로드 시 카운트 업데이트
+// 최초 카운트
 updateCartCount();
-
 </script>
+
 
 
 </body>
