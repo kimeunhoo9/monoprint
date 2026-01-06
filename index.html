@@ -3,8 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>monoprint</title>
+  <title>MonoPrint</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* 기본 스타일 */
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: #f5f5f5; }
+    nav a { margin-right: 15px; text-decoration: none; color: #333; }
+    .products { display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; }
+    .product { border: 1px solid #ddd; padding: 10px; width: 200px; text-align: center; }
+    .product img { width: 100%; height: auto; }
+    .add-cart-btn, .buy-btn { display: block; margin: 5px 0; padding: 5px 10px; text-decoration: none; background: #333; color: #fff; border: none; cursor: pointer; }
+    .buy-btn { background: #ff5722; }
+  </style>
 </head>
 
 <body>
@@ -17,39 +28,19 @@
     <a href="#contact">문의</a>
   </nav>
   <button id="cart-btn">🛒 장바구니 (<span id="cart-count">0</span>)</button>
-
 </header>
 
 <section id="intro">
   <h2>소개</h2>
-  <p>MonoPrint는 미니멀한 디자인과 감각적인 프린팅 티셔츠를 선보이는 브랜드입니다.</p>
+  <p>MonoPrint는 미니멀한 디자인과 감각적인 프린팅 티셔츠를 선보이는 브랜드입니다.  
+  편안하게 입을 수 있는 일상 티셔츠부터 감각적인 프린팅 디자인까지,  
+  우리의 일상을 조금 더 특별하게 만들어드립니다.</p>
 </section>
 
 <section id="products">
   <h2>제품</h2>
-
   <div class="products">
-    <div class="product">
-      <img src="images/minimal-tee.jpg.png" alt="Minimal Tee">
-      <h3>사랑해티셔츠</h3>
-      <p class="price">₩39,000</p>
-
-       <button class="add-cart-btn" data-name="사랑해티셔츠" data-price="39000">
-    장바구니 담기
-  </button>
-    </div>
-
- <div class="products"></div>
-    <div class="product">
-          <img src="images/suki-T-shirt.jpg.png" alt="Minimal Tee">
-      <h3>좋아해티셔츠</h3>
-      <p class="price">₩39,000</p>
-
-      <button class="add-cart-btn" data-name="좋아해 티셔츠" data-price="39000">
-  장바구니 담기
-</button>
-
-    </div>
+    <!-- 상품은 JS에서 자동 생성됩니다 -->
   </div>
 </section>
 
@@ -59,84 +50,96 @@
 </section>
 
 <script>
-let cart = []; // 장바구니 배열
-const cartCount = document.getElementById('cart-count');
-const cartBtn = document.getElementById('cart-btn');
-const addButtons = document.querySelectorAll('.add-cart-btn');
+  // 1️⃣ 장바구니 배열
+  let cart = [];
 
-// 장바구니 담기 버튼 클릭
-addButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    const name = button.dataset.name;
-    const price = Number(button.dataset.price);
-
-    // 이미 담긴 상품이면 수량 증가
-    const existing = cart.find(item => item.name === name);
-    if (existing) {
-      existing.quantity += 1;
-    } else {
-      cart.push({ name, price, quantity: 1 });
+  // 2️⃣ 상품 데이터 배열
+  const productsData = [
+    {
+      name: "사랑해티셔츠",
+      price: 39000,
+      img: "images/minimal-tee.jpg.png",
+      link: "https://open.kakao.com/o/s3PbL79h"
+    },
+    {
+      name: "좋아해티셔츠",
+      price: 39000,
+      img: "images/suki-T-shirt.jpg.png",
+      link: "https://open.kakao.com/o/s3PbL79h"
+    },
+    {
+      name: "집중하다 티셔츠",
+      price: 39000,
+      img: "images/집중하다-T-Shirt.jpg",
+      link: "https://open.kakao.com/o/s3PbL79h"
     }
+    // 나중에 상품을 추가하려면 여기 배열에 넣으면 끝!
+  ];
 
-    updateCartCount();
+  // 3️⃣ 상품 HTML 자동 생성
+  const productsContainer = document.querySelector('.products');
+
+  productsData.forEach(product => {
+    const div = document.createElement('div');
+    div.className = 'product';
+
+    div.innerHTML = `
+      <img src="${product.img}" alt="${product.name}">
+      <h3>${product.name}</h3>
+      <p class="price">₩${product.price.toLocaleString()}</p>
+      <button class="add-cart-btn" data-name="${product.name}" data-price="${product.price}">장바구니 담기</button>
+      <a href="${product.link}" target="_blank" class="buy-btn">구매하기</a>
+    `;
+
+    productsContainer.appendChild(div);
   });
-});
 
-// 상단 장바구니 버튼 클릭 → 장바구니 확인
-cartBtn.addEventListener('click', () => {
-  if (cart.length === 0) {
-    alert('장바구니가 비어있습니다.');
-    return;
+  // 4️⃣ 장바구니 JS
+  const cartCount = document.getElementById('cart-count');
+  const cartBtn = document.getElementById('cart-btn');
+
+  // 상품 버튼 이벤트 연결
+  function attachCartEvents() {
+    const addButtons = document.querySelectorAll('.add-cart-btn');
+    addButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const name = button.dataset.name;
+        const price = Number(button.dataset.price);
+
+        const existing = cart.find(item => item.name === name);
+        if (existing) {
+          existing.quantity += 1;
+        } else {
+          cart.push({ name, price, quantity: 1 });
+        }
+
+        updateCartCount();
+      });
+    });
   }
 
-  let message = '🛒 장바구니 목록\n\n';
-  cart.forEach((item, index) => {
-    message += `${index + 1}. ${item.name} - ₩${item.price} x ${item.quantity} = ₩${item.price * item.quantity}\n`;
-  });
-  alert(message);
-});
+  attachCartEvents();
 
-// 장바구니 숫자 업데이트
-function updateCartCount() {
-  const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-  cartCount.textContent = total;
-}
+  // 장바구니 버튼 클릭
+  cartBtn.addEventListener('click', () => {
+    if (cart.length === 0) {
+      alert('장바구니가 비어있습니다.');
+      return;
+    }
+
+    let message = '🛒 장바구니 목록\n\n';
+    cart.forEach((item, index) => {
+      message += `${index + 1}. ${item.name} - ₩${item.price.toLocaleString()} x ${item.quantity} = ₩${(item.price * item.quantity).toLocaleString()}\n`;
+    });
+    alert(message);
+  });
+
+  // 장바구니 숫자 업데이트
+  function updateCartCount() {
+    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+    cartCount.textContent = total;
+  }
 </script>
+
 </body>
 </html>
-<div class="product">
-  <img src="images/minimal-tee.jpg.png" alt="Minimal Tee">
-  <h3>Minimal Tee</h3>
-  <p class="price">₩39,000</p>
-  <p>사랑해 티셔츠</p>
-
-  <a href="https://open.kakao.com/o/guXCw49h" target="_blank" class="buy-btn">
-    구매하기
-  </a>
-</div>
-</button>
-<div class="products">
-
-  <!-- 상품 1 -->
-  <div class="product">
-    <img src="images/minimal-tee.jpg.png" alt="Minimal Tee">
-    <h3>Minimal Tee</h3>
-    <p class="price">₩39,000</p>
-
-    <a href="https://open.kakao.com/o/guXCw49h" class="buy-btn" target="_blank">
-      구매하기
-    </a>
-  </div>
-
-  <!-- 상품 2 -->
-  <div class="product">
-    <img src="images/suki-T-shirt.jpg.png" alt="Typo Tee">
-    <h3>좋아해 티셔츠</h3>
-    <p class="price">₩39,000</p>
-
-    <a href="https://open.kakao.com/o/guXCw49h" class="buy-btn" target="_blank">
-      구매하기
-    </a>
-  </div>
-
-</div>
