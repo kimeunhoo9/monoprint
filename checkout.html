@@ -55,8 +55,40 @@
 
   document.getElementById('pay-btn').addEventListener('click', ()=>{
     if(cart.length === 0) return alert('장바구니가 비어있습니다.');
-    alert(`결제를 진행합니다.\n총액: ₩${checkoutTotal.textContent}`);
   });
+  // ---------------------------
+// 결제하기 버튼 (오픈카톡 이동)
+// ---------------------------
+const checkoutBtn = document.createElement('button');
+checkoutBtn.textContent = '결제하기';
+checkoutBtn.style.marginTop = '15px';
+checkoutBtn.style.padding = '8px 12px';
+checkoutBtn.style.cursor = 'pointer';
+checkoutBtn.style.background = '#ff5722';
+checkoutBtn.style.color = 'white';
+checkoutBtn.style.border = 'none';
+checkoutBtn.style.fontWeight = 'bold';
+checkoutBtn.style.borderRadius = '4px';
+
+// 모달 안에 버튼 추가
+cartModal.querySelector('.cart-content').appendChild(checkoutBtn);
+
+// 클릭하면 오픈카톡 링크로 이동
+checkoutBtn.addEventListener('click', () => {
+  if(cart.length === 0){
+    alert('장바구니가 비어있습니다.');
+    return;
+  }
+
+  // 총액 계산 (선택 사항)
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  // 카톡 링크 (자신의 오픈채팅 링크로 바꾸세요)
+  const kakaoLink = 'https://open.kakao.com/o/s3PbL79h';
+
+  // 링크 열기
+  window.open(kakaoLink, '_blank');
+});
 </script>
 
 </body>

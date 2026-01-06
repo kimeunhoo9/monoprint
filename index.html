@@ -152,7 +152,7 @@ cartClose.addEventListener('click', () => cartModal.style.display='none');
 cartModal.addEventListener('click', e => { if(e.target === cartModal) cartModal.style.display='none'; });
 
 // ---------------------------
-// 결제하기 버튼 추가
+// 결제하기 버튼 (오픈카톡 이동)
 // ---------------------------
 const checkoutBtn = document.createElement('button');
 checkoutBtn.textContent = '결제하기';
@@ -164,29 +164,25 @@ checkoutBtn.style.color = 'white';
 checkoutBtn.style.border = 'none';
 checkoutBtn.style.fontWeight = 'bold';
 checkoutBtn.style.borderRadius = '4px';
-checkoutBtn.addEventListener('mouseover', ()=>checkoutBtn.style.background='#e64a19');
-checkoutBtn.addEventListener('mouseout', ()=>checkoutBtn.style.background='#ff5722');
 
+// 모달 안에 버튼 추가
 cartModal.querySelector('.cart-content').appendChild(checkoutBtn);
 
-// 결제 버튼 클릭 시 checkout.html로 이동
+// 클릭하면 오픈카톡 링크로 이동
 checkoutBtn.addEventListener('click', () => {
   if(cart.length === 0){
     alert('장바구니가 비어있습니다.');
     return;
   }
-  // 장바구니 데이터를 JSON 문자열로 URL 전달
-  const cartStr = encodeURIComponent(JSON.stringify(cart));
-  window.location.href = `checkout.html?cart=${cartStr}`;
-});
-checkoutBtn.addEventListener('click', () => {
-  if(cart.length === 0){
-    alert('장바구니가 비어있습니다.');
-    return;
-  }
-  // 장바구니 데이터를 JSON 문자열로 URL에 전달
-  const cartStr = encodeURIComponent(JSON.stringify(cart));
-  window.location.href = `checkout.html?cart=${cartStr}`;
+
+  // 총액 계산 (선택 사항)
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  // 카톡 링크 (자신의 오픈채팅 링크로 바꾸세요)
+  const kakaoLink = 'https://open.kakao.com/o/s3PbL79h';
+
+  // 링크 열기
+  window.open(kakaoLink, '_blank');
 });
 
 </script>
