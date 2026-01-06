@@ -5,46 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MonoPrint</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    /* 기본 스타일 */
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-    header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: #f5f5f5; }
-    nav a { margin-right: 15px; text-decoration: none; color: #333; }
-    section { padding: 50px 20px; text-align: center; }
-    section h2 { font-size: 28px; margin-bottom: 20px; }
-
-    /* 소개 섹션 */
-    #intro { 
-      background: #f0f0f0; 
-      border-bottom: 2px solid #ddd; 
-      padding: 50px 20px; 
-    }
-    #intro h2 { font-size: 2rem; margin-bottom: 20px; position: relative; display: inline-block; }
-    #intro h2::after { 
-      content: ""; display: block; width: 50%; height: 3px; background: #ff5722; margin: 10px auto 0; border-radius: 2px; 
-    }
-    #intro p { font-size: 15px; color: #555; max-width: 600px; margin: 0 auto; line-height: 1.6; }
-
-    /* 상품 섹션 */
-    .products { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 40px; }
-    .product { border: 1px solid #ddd; padding: 10px; width: 200px; text-align: center; }
-    .product img { width: 100%; height: auto; }
-    .price { margin-top: 10px; font-weight: bold; }
-
-    /* 버튼 스타일 */
-    .add-cart-btn { margin-top: 10px; padding: 8px 12px; background: black; color: white; border: none; cursor: pointer; transition: background 0.3s; }
-    .add-cart-btn:hover { background: #333; }
-    .buy-btn { display: inline-block; margin-top: 15px; padding: 10px 20px; background: black; color: white; text-decoration: none; cursor: pointer; }
-    .buy-btn:hover { background: #ff5722; }
-    #cart-btn { background: white; color: black; border: none; padding: 8px 12px; cursor: pointer; }
-
-    /* 모바일 반응형 */
-    @media (max-width: 768px) {
-      header { flex-direction: column; gap: 10px; }
-      .products { flex-direction: column; align-items: center; }
-      .product { width: 90%; }
-    }
-  </style>
 </head>
 
 <body>
@@ -61,9 +21,11 @@
 
 <section id="intro">
   <h2>소개</h2>
-  <p>MonoPrint는 미니멀한 디자인과 감각적인 프린팅 티셔츠를 선보이는 브랜드입니다.  
-  편안하게 입을 수 있는 일상 티셔츠부터 감각적인 프린팅 디자인까지,  
-  우리의 일상을 조금 더 특별하게 만들어드립니다.</p>
+  <p>
+    MonoPrint는 미니멀한 디자인과 감각적인 프린팅 티셔츠를 선보이는 브랜드입니다.<br>
+    편안하게 입을 수 있는 일상 티셔츠부터 감각적인 프린팅 디자인까지,<br>
+    우리의 일상을 조금 더 특별하게 만들어드립니다.
+  </p>
 </section>
 
 <section id="products">
@@ -78,81 +40,110 @@
   <p>이메일: eunhugim600@gmail.com</p>
 </section>
 
+<!-- 장바구니 모달 -->
+<div id="cart-modal" class="cart-modal">
+  <div class="cart-content">
+    <span id="cart-close">&times;</span>
+    <h3>🛒 장바구니</h3>
+    <ul id="cart-items"></ul>
+  </div>
+</div>
+
 <script>
-  let cart = []; // 장바구니 배열
-  const productsContainer = document.querySelector('.products');
+let cart = [];
+const productsContainer = document.querySelector('.products');
 
-  // 기존 상품 데이터 배열
-  const productsData = [
-    {
-      name: "사랑해티셔츠",
-      price: 39000,
-      img: "images/사랑해-T-shirt.jpg",
-      link: "https://open.kakao.com/o/s3PbL79h"
-    },
-    {
-      name: "좋아해티셔츠",
-      price: 39000,
-      img: "images/suki-T-shirt.jpg.png",
-      link: "https://open.kakao.com/o/s3PbL79h"
-    },
-    {
-      name: "집중하다 티셔츠",
-      price: 39000,
-      img: "images/집중하다-T-Shirt.jpg",
-      link: "https://open.kakao.com/o/s3PbL79h"
-    }
-    
-  ];
+// 상품 데이터
+const productsData = [
+  { name: "사랑해티셔츠", price: 39000, img: "images/사랑해-T-shirt.jpg", link: "https://open.kakao.com/o/s3PbL79h" },
+  { name: "좋아해티셔츠", price: 39000, img: "images/suki-T-shirt.jpg.png", link: "https://open.kakao.com/o/s3PbL79h" },
+  { name: "집중하다 티셔츠", price: 39000, img: "images/집중하다-T-Shirt.jpg", link: "https://open.kakao.com/o/s3PbL79h" },
+  { name: "괜찮아 티셔츠", price: 39000, img: "images/괜찮아-T-shirt.jpg", link: "https://open.kakao.com/o/s3PbL79h" }
+];
 
-  // 상품 HTML 생성 함수
-  function addProductToPage(product) {
-    const div = document.createElement('div');
-    div.className = 'product';
-    div.innerHTML = `
-      <img src="${product.img}" alt="${product.name}">
-      <h3>${product.name}</h3>
-      <p class="price">₩${product.price.toLocaleString()}</p>
-      <button class="add-cart-btn" data-name="${product.name}" data-price="${product.price}">장바구니 담기</button>
-      <a href="${product.link}" target="_blank" class="buy-btn">구매하기</a>
-    `;
-    productsContainer.appendChild(div);
+// 상품 추가
+function addProductToPage(product){
+  const div = document.createElement('div');
+  div.className = 'product';
+  div.innerHTML = `
+    <img src="${product.img}" alt="${product.name}">
+    <h3>${product.name}</h3>
+    <p class="price">₩${product.price.toLocaleString()}</p>
+    <button class="add-cart-btn" data-name="${product.name}" data-price="${product.price}">장바구니 담기</button>
+    <a href="${product.link}" target="_blank" class="buy-btn">구매하기</a>
+  `;
+  productsContainer.appendChild(div);
 
-    // 새로 생성된 버튼 이벤트 연결
-    div.querySelector('.add-cart-btn').addEventListener('click', () => {
-      const name = product.name;
-      const price = product.price;
-      const existing = cart.find(item => item.name === name);
-      if (existing) existing.quantity += 1;
-      else cart.push({ name, price, quantity: 1 });
-      updateCartCount();
-    });
-  }
-
-  // 처음 페이지 로드 시 기존 상품 추가
-  productsData.forEach(addProductToPage);
-
-  // 장바구니 숫자 업데이트
-  const cartCount = document.getElementById('cart-count');
-  const cartBtn = document.getElementById('cart-btn');
-  function updateCartCount() {
-    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-    cartCount.textContent = total;
-  }
-
-  // 장바구니 버튼 클릭
-  cartBtn.addEventListener('click', () => {
-    if (cart.length === 0) return alert('장바구니가 비어있습니다.');
-    let message = '🛒 장바구니 목록\n\n';
-    cart.forEach((item, idx) => {
-      message += `${idx + 1}. ${item.name} - ₩${item.price.toLocaleString()} x ${item.quantity} = ₩${(item.price*item.quantity).toLocaleString()}\n`;
-    });
-    alert(message);
+  div.querySelector('.add-cart-btn').addEventListener('click', () => {
+    const name = product.name;
+    const price = product.price;
+    const existing = cart.find(i=>i.name===name);
+    if(existing) existing.quantity +=1;
+    else cart.push({name, price, quantity:1});
+    updateCartCount();
   });
+}
 
-productsData.push({name:"괜찮아 티셔츠", price:39000, img:"images/괜찮아-T-shirt.jpg", link:"https://open.kakao.com/o/s3PbL79h"});
-addProductToPage(productsData[productsData.length-1]);
+productsData.forEach(addProductToPage);
 
+const cartCount = document.getElementById('cart-count');
+const cartBtn = document.getElementById('cart-btn');
+const cartModal = document.getElementById('cart-modal');
+const cartItems = document.getElementById('cart-items');
+const cartClose = document.getElementById('cart-close');
+
+function updateCartCount(){
+  const total = cart.reduce((sum, item)=>sum+item.quantity,0);
+  cartCount.textContent = total;
+}
+
+function renderCart(){
+  cartItems.innerHTML = '';
+  if(cart.length===0){
+    cartItems.innerHTML = '<li>장바구니가 비어있습니다.</li>';
+    return;
+  }
+
+  cart.forEach((item, idx)=>{
+    const li = document.createElement('li');
+    li.innerHTML = `
+      ${idx+1}. ${item.name} - ₩${item.price.toLocaleString()} x ${item.quantity} = ₩${(item.price*item.quantity).toLocaleString()}
+      <span class="cart-item-controls">
+        <button class="minus">-</button>
+        <button class="plus">+</button>
+        <button class="remove">삭제</button>
+      </span>
+    `;
+    cartItems.appendChild(li);
+
+    li.querySelector('.minus').addEventListener('click', ()=>{
+      if(item.quantity>1) item.quantity--;
+      else cart = cart.filter(i=>i!==item);
+      updateCartCount();
+      renderCart();
+    });
+    li.querySelector('.plus').addEventListener('click', ()=>{
+      item.quantity++;
+      updateCartCount();
+      renderCart();
+    });
+    li.querySelector('.remove').addEventListener('click', ()=>{
+      cart = cart.filter(i=>i!==item);
+      updateCartCount();
+      renderCart();
+    });
+  });
+}
+
+// 장바구니 열기
+cartBtn.addEventListener('click', ()=>{
+  renderCart();
+  cartModal.style.display='flex';
+});
+
+// 닫기
+cartClose.addEventListener('click', ()=> cartModal.style.display='none');
+cartModal.addEventListener('click', e=>{if(e.target===cartModal) cartModal.style.display='none';});
 </script>
 
 </body>
