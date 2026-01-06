@@ -47,15 +47,20 @@
     <h3>🛒 장바구니</h3>
     <ul id="cart-items"></ul>
     <p id="cart-total" style="margin-top:15px; font-weight:bold;">총합: ₩0</p>
-    <!-- 결제 버튼은 JS에서 추가 -->
   </div>
 </div>
 
 <script>
 let cart = [];
-const productsContainer = document.querySelector('.products');
 
-// 상품 데이터
+// ----- 1️⃣ 페이지 로드 시 localStorage에서 불러오기 -----
+const savedCart = localStorage.getItem('cart');
+if(savedCart){
+  cart = JSON.parse(savedCart);
+}
+
+// ----- 2️⃣ 상품 데이터 -----
+const productsContainer = document.querySelector('.products');
 const productsData = [
   { name: "사랑해티셔츠", price: 39000, img: "images/사랑해-T-shirt.jpg" },
   { name: "좋아해티셔츠", price: 39000, img: "images/suki-T-shirt.jpg.png" },
@@ -63,7 +68,7 @@ const productsData = [
   { name: "괜찮아 티셔츠", price: 39000, img: "images/괜찮아-T-shirt.jpg" }
 ];
 
-// 상품 추가
+// ----- 3️⃣ 상품 추가 함수 -----
 function addProductToPage(product){
   const div = document.createElement('div');
   div.className = 'product';
@@ -80,12 +85,13 @@ function addProductToPage(product){
     if(existing) existing.quantity +=1;
     else cart.push({name: product.name, price: product.price, quantity:1});
     updateCartCount();
+    saveCart(); // ✅ localStorage 저장
   });
 }
 
 productsData.forEach(addProductToPage);
 
-// 장바구니 모달 관련
+// ----- 4️⃣ 장바구니 관련 -----
 const cartCount = document.getElementById('cart-count');
 const cartBtn = document.getElementById('cart-btn');
 const cartModal = document.getElementById('cart-modal');
@@ -96,6 +102,10 @@ const cartTotal = document.getElementById('cart-total');
 function updateCartCount(){
   const total = cart.reduce((sum, item) => sum + item.quantity, 0);
   cartCount.textContent = total;
+}
+
+function saveCart(){
+  localStorage.setItem('cart', JSON.stringify(cart));
 }
 
 function renderCart(){
@@ -125,35 +135,35 @@ function renderCart(){
       else cart = cart.filter(i => i !== item);
       updateCartCount();
       renderCart();
+      saveCart(); // ✅ 저장
     });
     li.querySelector('.plus').addEventListener('click', () => {
       item.quantity++;
       updateCartCount();
       renderCart();
+      saveCart(); // ✅ 저장
     });
     li.querySelector('.remove').addEventListener('click', () => {
       cart = cart.filter(i => i !== item);
       updateCartCount();
       renderCart();
+      saveCart(); // ✅ 저장
     });
   });
 
   cartTotal.textContent = `총합: ₩${totalSum.toLocaleString()}`;
 }
 
-// 장바구니 열기
+// ----- 5️⃣ 장바구니 모달 열기/닫기 -----
 cartBtn.addEventListener('click', () => {
   renderCart();
   cartModal.style.display = 'flex';
 });
 
-// 모달 닫기
 cartClose.addEventListener('click', () => cartModal.style.display='none');
 cartModal.addEventListener('click', e => { if(e.target === cartModal) cartModal.style.display='none'; });
 
-// ---------------------------
-// 결제하기 버튼 (오픈카톡 이동)
-// ---------------------------
+// ----- 6️⃣ 결제하기 버튼 (오픈카톡 이동) -----
 const checkoutBtn = document.createElement('button');
 checkoutBtn.textContent = '결제하기';
 checkoutBtn.style.marginTop = '15px';
@@ -164,26 +174,27 @@ checkoutBtn.style.color = 'white';
 checkoutBtn.style.border = 'none';
 checkoutBtn.style.fontWeight = 'bold';
 checkoutBtn.style.borderRadius = '4px';
+checkoutBtn.addEventListener('mouseover', ()=> checkoutBtn.style.background='#e64a19');
+checkoutBtn.addEventListener('mouseout', ()=> checkoutBtn.style.background='#ff5722');
 
-// 모달 안에 버튼 추가
 cartModal.querySelector('.cart-content').appendChild(checkoutBtn);
 
-// 클릭하면 오픈카톡 링크로 이동
 checkoutBtn.addEventListener('click', () => {
   if(cart.length === 0){
     alert('장바구니가 비어있습니다.');
     return;
   }
-
-  // 총액 계산 (선택 사항)
+  // 총합 계산
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  alert(`결제를 진행합니다.\n총액: ₩${total.toLocaleString()}`);
 
-  // 카톡 링크 (자신의 오픈채팅 링크로 바꾸세요)
+  // 오픈카톡 링크 열기 (자신 링크로 변경)
   const kakaoLink = 'https://open.kakao.com/o/s3PbL79h';
-
-  // 링크 열기
   window.open(kakaoLink, '_blank');
 });
+
+// ----- 7️⃣ 페이지 로드 시 장바구니 숫자 표시 -----
+updateCartCount();
 
 </script>
 
