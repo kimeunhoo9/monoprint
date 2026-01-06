@@ -46,6 +46,7 @@
     <span id="cart-close">&times;</span>
     <h3>🛒 장바구니</h3>
     <ul id="cart-items"></ul>
+    <p id="cart-total" style="margin-top:15px; font-weight:bold;">총합: ₩0</p>
   </div>
 </div>
 
@@ -91,6 +92,7 @@ const cartBtn = document.getElementById('cart-btn');
 const cartModal = document.getElementById('cart-modal');
 const cartItems = document.getElementById('cart-items');
 const cartClose = document.getElementById('cart-close');
+const cartTotal = document.getElementById('cart-total');
 
 function updateCartCount(){
   const total = cart.reduce((sum, item)=>sum+item.quantity,0);
@@ -101,10 +103,13 @@ function renderCart(){
   cartItems.innerHTML = '';
   if(cart.length===0){
     cartItems.innerHTML = '<li>장바구니가 비어있습니다.</li>';
+    cartTotal.textContent = "총합: ₩0";
     return;
   }
 
+  let totalSum = 0;
   cart.forEach((item, idx)=>{
+    totalSum += item.price * item.quantity;
     const li = document.createElement('li');
     li.innerHTML = `
       ${idx+1}. ${item.name} - ₩${item.price.toLocaleString()} x ${item.quantity} = ₩${(item.price*item.quantity).toLocaleString()}
@@ -133,6 +138,8 @@ function renderCart(){
       renderCart();
     });
   });
+
+  cartTotal.textContent = `총합: ₩${totalSum.toLocaleString()}`;
 }
 
 // 장바구니 열기
@@ -148,3 +155,4 @@ cartModal.addEventListener('click', e=>{if(e.target===cartModal) cartModal.style
 
 </body>
 </html>
+
