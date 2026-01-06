@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>결제 페이지 - MonoPrint</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body { font-family: Arial; padding: 20px; background: #f9f9f9; }
+  h2 { text-align: center; margin-bottom: 20px; }
+  .checkout { max-width: 500px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);}
+  .checkout p { margin: 10px 0; }
+  .checkout button { width: 100%; padding: 10px; background: black; color: white; border: none; cursor: pointer; font-size: 16px; }
+  .checkout button:hover { background: #333; }
+</style>
+</head>
+<body>
+
+<div class="checkout">
+  <h2>결제 페이지</h2>
+  <div id="checkout-items"></div>
+  <p style="font-weight:bold;">총 합계: ₩<span id="checkout-total">0</span></p>
+  <button id="pay-btn">결제 진행</button>
+</div>
+
+<script>
+  // URL에서 cart 데이터 가져오기
+  const params = new URLSearchParams(window.location.search);
+  const cartStr = params.get('cart');
+  let cart = [];
+  if(cartStr){
+    try{
+      cart = JSON.parse(decodeURIComponent(cartStr));
+    }catch(e){
+      console.error("장바구니 데이터 파싱 실패", e);
+    }
+  }
+
+  const checkoutItems = document.getElementById('checkout-items');
+  const checkoutTotal = document.getElementById('checkout-total');
+
+  if(cart.length === 0){
+    checkoutItems.innerHTML = '<p>장바구니가 비어있습니다.</p>';
+    checkoutTotal.textContent = '0';
+  }else{
+    let totalSum = 0;
+    cart.forEach((item, idx)=>{
+      totalSum += item.price * item.quantity;
+      const p = document.createElement('p');
+      p.textContent = `${idx+1}. ${item.name} - ₩${item.price.toLocaleString()} x ${item.quantity} = ₩${(item.price*item.quantity).toLocaleString()}`;
+      checkoutItems.appendChild(p);
+    });
+    checkoutTotal.textContent = totalSum.toLocaleString();
+  }
+
+  document.getElementById('pay-btn').addEventListener('click', ()=>{
+    if(cart.length === 0) return alert('장바구니가 비어있습니다.');
+    alert(`결제를 진행합니다.\n총액: ₩${checkoutTotal.textContent}`);
+  });
+</script>
+
+</body>
+</html>
+
