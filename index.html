@@ -75,13 +75,29 @@ function saveCart() {
 // 2. 상품 데이터 (여기만 수정)
 // ============================
 const productsData = [
-  { name: "사랑해티셔츠", price: 39000, img: "images/사랑해-T-shirt.jpg", category: "반팔" },
-  { name: "좋아해티셔츠", price: 39000, img: "images/suki-T-shirt.jpg.png", category: "반팔" },
-  { name: "집중하다 티셔츠", price: 39000, img: "images/집중하다-T-Shirt.jpg", category: "반팔" },
-  { name: "괜찮아 티셔츠", price: 39000, img: "images/괜찮아-T-shirt.jpg", category: "반팔" },
-  { name: "말 보단 행동으로 증명함 티셔츠", price: 39000, img: "images/증명-T-shirt.jpg", category: "반팔" },
-  { name: "새로운 후드티", price: 39000, img: "images/logo.jpg", category: "후드티"}
+  {
+    name: "사랑해 티셔츠",
+    price: 39000,
+    img: "images/사랑해-T-shirt.jpg",
+    category: "반팔",
+    description: "사랑이라는 단어를 미니멀한 타이포그래피로 표현한 티셔츠입니다."
+  },
+  {
+    name: "좋아해 티셔츠",
+    price: 39000,
+    img: "images/suki-T-shirt.jpg.png",
+    category: "반팔",
+    description: "일본어 '스키(好き)'를 감각적으로 프린트한 디자인."
+  },
+  {
+    name: "집중하다 티셔츠",
+    price: 39000,
+    img: "images/집중하다-T-Shirt.jpg",
+    category: "반팔",
+    description: "몰입의 순간을 표현한 감각적인 문구 티셔츠."
+  }
 ];
+
 
 // ============================
 // 3. 상품 렌더링
@@ -91,12 +107,21 @@ const productsContainer = document.querySelector('.products');
 function addProductToPage(product) {
   const div = document.createElement('div');
   div.className = 'product';
-  div.innerHTML = `
+ div.innerHTML = `
+ <a href="detail.html
+?name=${encodeURIComponent(product.name)}
+&price=${product.price}
+&img=${encodeURIComponent(product.img)}
+&category=${encodeURIComponent(product.category)}
+&desc=${encodeURIComponent(product.description)}">
+
     <img src="${product.img}" alt="${product.name}">
     <h3>${product.name}</h3>
-    <p class="price">₩${product.price.toLocaleString()}</p>
-    <button class="add-cart-btn">장바구니 담기</button>
-  `;
+  </a>
+  <p class="price">₩${product.price.toLocaleString()}</p>
+  <button class="add-cart-btn">장바구니 담기</button>
+`;
+
 
   div.querySelector('.add-cart-btn').addEventListener('click', () => {
     const existing = cart.find(i => i.name === product.name);

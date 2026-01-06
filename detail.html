@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>상품 상세 - MonoPrint</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1 onclick="location.href='index.html'" style="cursor:pointer;">MonoPrint</h1>
+</header>
+
+<section style="max-width:600px;margin:50px auto;text-align:center;">
+  <img id="detail-img" style="width:100%;max-width:300px;">
+  <h2 id="detail-name"></h2>
+  <p id="detail-price"></p>
+  <p id="detail-category"></p>
+
+  <!-- ✅ 상품 설명 추가 -->
+  <p id="detail-desc" style="
+    margin-top:20px;
+    line-height:1.6;
+    color:#555;
+    font-size:15px;
+  "></p>
+</section>
+
+<script>
+  const params = new URLSearchParams(location.search);
+
+  const name = params.get('name');
+  const price = params.get('price');
+  const img = params.get('img');
+  const category = params.get('category');
+  const desc = params.get('desc'); // ✅ 설명 받기
+
+  document.getElementById('detail-name').textContent = name;
+  document.getElementById('detail-price').textContent = `₩${Number(price).toLocaleString()}`;
+  document.getElementById('detail-category').textContent = category;
+  document.getElementById('detail-img').src = img;
+  document.getElementById('detail-desc').textContent = desc; // ✅ 설명 출력
+</script>
+
+</body>
+</html>
