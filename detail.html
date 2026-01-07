@@ -1,10 +1,105 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>상품 상세 - MonoPrint</title>
-  <link rel="icon" href="MonoPrint 로고.png" type="image/png">
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      background: #f8f8f8;
+      font-family: "Pretendard", sans-serif;
+    }
+
+    .detail-wrap {
+      width: 900px;
+      margin: 60px auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      display: flex;
+      gap: 40px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+    }
+
+    .detail-left img {
+      width: 350px;
+      border-radius: 15px;
+    }
+
+    .detail-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .detail-right h2 {
+      font-size: 26px;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .detail-category {
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 20px;
+    }
+
+    #detail-price {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    select {
+      width: 200px;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+
+    #addCartBtn {
+      width: 100%;
+      padding: 14px;
+      background: black;
+      color: white;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+
+    .back-btn {
+      margin: 20px;
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    /* ⭐ 아래 설명 박스 */
+    .description-box {
+      width: 900px;
+      margin: 20px auto 80px;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    }
+
+    .description-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .description-text {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #444;
+      white-space: pre-line;
+    }
+  </style>
 </head>
 <body>
 
@@ -12,36 +107,88 @@
   <h1 onclick="location.href='index.html'" style="cursor:pointer;">MonoPrint</h1>
 </header>
 
-<section style="max-width:600px;margin:50px auto;text-align:center;">
-  <img id="detail-img" style="width:100%;max-width:300px;">
-  <h2 id="detail-name"></h2>
-  <p id="detail-price"></p>
-  <p id="detail-category"></p>
+<div class="back-btn" onclick="history.back()">← 뒤로가기</div>
 
-  <!-- ✅ 상품 설명 추가 -->
-  <p id="detail-desc" style="
-    margin-top:20px;
-    line-height:1.6;
-    color:#555;
-    font-size:15px;
-  "></p>
-</section>
+<div class="detail-wrap">
+  <div class="detail-left">
+    <img id="detail-img">
+  </div>
+
+  <div class="detail-right">
+    <div>
+      <h2 id="detail-name"></h2>
+      <div class="detail-category" id="detail-category"></div>
+      <div id="detail-price"></div>
+
+      <label for="size">사이즈 선택</label><br>
+      <select id="size">
+        <option value="" disabled selected>사이즈 선택</option>
+      </select>
+    </div>
+
+    <button id="addCartBtn">장바구니 담기</button>
+  </div>
+</div>
+
+<!-- ⭐⭐ 상품 설명 박스 추가 ⭐⭐ -->
+<div class="description-box">
+  <div class="description-title">상품 설명</div>
+  <div class="description-text" id="detail-desc"></div>
+</div>
 
 <script>
   const params = new URLSearchParams(location.search);
+  const name = params.get("name");
+  const img = params.get("img");
+  const category = params.get("category");
+  const description = params.get("desc");
+  const options = JSON.parse(params.get("options"));
 
-  const name = params.get('name');
-  const price = params.get('price');
-  const img = params.get('img');
-  const category = params.get('category');
-  const desc = params.get('desc'); // ✅ 설명 받기
+  document.getElementById("detail-name").textContent = name;
+  document.getElementById("detail-category").textContent = category;
+  document.getElementById("detail-img").src = img;
+  document.getElementById("detail-desc").textContent = description;
 
-  document.getElementById('detail-name').textContent = name;
-  document.getElementById('detail-price').textContent = `₩${Number(price).toLocaleString()}`;
-  document.getElementById('detail-category').textContent = category;
-  document.getElementById('detail-img').src = img;
-  document.getElementById('detail-desc').textContent = desc; // ✅ 설명 출력
+  // 옵션 넣기
+  const sizeSelect = document.getElementById("size");
+  for (const opt of options) {
+    const o = document.createElement("option");
+    o.value = opt.size;
+    o.textContent = `${opt.size} (₩${opt.price.toLocaleString()})`;
+    o.dataset.price = opt.price;
+    sizeSelect.appendChild(o);
+  }
+
+  // 가격 업데이트
+  sizeSelect.addEventListener("change", () => {
+    const price = sizeSelect.options[sizeSelect.selectedIndex].dataset.price;
+    document.getElementById("detail-price").textContent = `₩${Number(price).toLocaleString()}`;
+  });
+
+  // 장바구니
+  document.getElementById("addCartBtn").addEventListener("click", () => {
+    const selected = sizeSelect.value;
+    if (!selected) return alert("사이즈를 선택하세요!");
+
+    const selectedOption = options.find(o => o.size === selected);
+
+    const item = {
+      name,
+      img,
+      category,
+      size: selected,
+      price: selectedOption.price,
+      quantity: 1
+    };
+
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    cart.push(item);
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    alert("장바구니에 담았습니다!");
+  });
 </script>
 
 </body>
 </html>
+
