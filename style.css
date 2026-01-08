@@ -37,7 +37,45 @@ section h2 { font-size: 28px; margin-bottom: 20px; }
 /* =====================
    상품 섹션
 ===================== */
-.products { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 40px; }
+/* =====================
+   상품 리스트 5개 정렬 (Grid 버전)
+===================== */
+.products {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* ⭐ 한 줄 5개 고정 */
+  gap: 30px;                              /* 간격 */
+  justify-items: center;                  /* 가운데 정렬 */
+  margin-top: 40px;
+}
+
+.product {
+  width: 100%;
+  max-width: 200px;
+  text-align: center;
+}
+
+.product img {
+  width: 100%;
+  height: auto;
+}
+
+/* =====================
+   반응형 설정
+===================== */
+/* 태블릿: 3개 */
+@media (max-width: 1000px) {
+  .products {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* 모바일: 2개 */
+@media (max-width: 600px) {
+  .products {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 .product { width: 200px; text-align: center; }
 .product img { width: 100%; height: auto; }
 .price { margin-top: 10px; font-weight: bold; }
