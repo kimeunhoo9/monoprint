@@ -238,5 +238,30 @@ section h2 { font-size: 28px; margin-bottom: 20px; }
 .detail-cart-btn:hover {
   opacity: 0.8;
 }
+/* =====================
+   상세페이지 하단 설명 박스
+===================== */
+.detail-description-box {
+    max-width: 1000px;
+    margin: 40px auto 80px auto;
+    padding: 30px;
+    border-top: 2px solid #eee;
+    line-height: 1.8;
+    color: #333;
+}
+
+.detail-description-box h3 {
+    margin-top: 25px;
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: black;
+}
+
+.detail-description-box p {
+    font-size: 15px;
+    color: #555;
+    margin-bottom: 10px;
+}
 
 
